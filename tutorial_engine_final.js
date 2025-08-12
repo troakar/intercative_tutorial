@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     .introjs-skipbutton { color: #9aa0a6 !important; background: none !important; float: left !important; }
 
-    /* --- ИЗМЕНЕНИЕ ЗДЕСЬ --- */
     /* Фон-оверлей в режиме обучения теперь красный и полупрозрачный */
     .introjs-overlay {
       background-color: rgba(234, 67, 53, 0.25) !important; /* Красный с 25% прозрачности */
@@ -132,19 +131,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- ЛОГИКА ДЛЯ "НАЧАТЬ ОБУЧЕНИЕ" ---
   guidedButton.addEventListener('click', () => {
+    // Если режим подсказок активен, сначала выключим его
+    if (hintsAreVisible) {
+        toggleHintsVisibility(false);
+    }
+
     introJs().setOptions({ 
       steps: GUIDED_TOUR_STEPS, 
       nextLabel: 'Далее →', 
       prevLabel: '← Назад', 
       doneLabel: 'Завершить'
-      // Мы убрали 'overlayOpacity' отсюда, чтобы CSS-правило работало
+      // overlayOpacity убран, стили в CSS
     })
     .onbeforechange(function(element) {
         document.querySelectorAll('.highlighted-tour-element').forEach(el => {
             el.classList.remove('highlighted-tour-element');
         });
         if (element) {
-            element.classList.add('highlighted-tour-element');
+            // Плавная прокрутка к элементу перед его подсветкой
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Добавляем класс подсветки с небольшой задержкой, чтобы анимация успела примениться
+            setTimeout(() => {
+                element.classList.add('highlighted-tour-element');
+            }, 100); // Задержка в 100мс
         }
     })
     .oncomplete(function() {
@@ -203,7 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
               const hintIndex = learnMoreLink.getAttribute('data-hint-index');
               const originalHintData = HINTS_DATA[hintIndex];
               if (originalHintData && originalHintData.details) {
-                introInstanceForHints.exit();
+                // Закрываем только текущий тултип Intro.js, чтобы точки остались
+                introInstanceForHints.exit(); 
                 const currentHintDot = document.querySelector(`.introjs-hint[data-step="${stepId}"]`);
                 if (currentHintDot) {
                     currentHintDot.classList.add('introjs-hint-visited');
@@ -226,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
       introInstanceForHints.addHints();
       
     } else {
-      // --- ПОСЛЕДУЮЩИЕ ЗАПУСКИ: ПЕРЕКЛЮЧАЕМ ВИДИМОСТЬ ---
       toggleHintsVisibility(!hintsAreVisible);
     }
   });
