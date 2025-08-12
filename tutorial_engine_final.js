@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
       100% { box-shadow: 0 0 0 0 rgba(138, 180, 248, 0); }
     }
 
-    /* Общие стили для Intro.js тултипов и оверлеев */
+    /* Общие стили для Intro.js тултипов */
     .introjs-tooltip {
       color: #e8eaed !important; background-color: #3c4043 !important;
       border: 1px solid #5f6368 !important; border-radius: 16px !important;
@@ -41,10 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     .introjs-skipbutton { color: #9aa0a6 !important; background: none !important; float: left !important; }
 
-    /* Делаем фон оверлея немного темнее для лучшего контраста */
+    /* --- ИЗМЕНЕНИЕ ЗДЕСЬ --- */
+    /* Фон-оверлей в режиме обучения теперь красный и полупрозрачный */
     .introjs-overlay {
-      opacity: 0.6 !important;
-      background-color: #000 !important;
+      background-color: rgba(234, 67, 53, 0.25) !important; /* Красный с 25% прозрачности */
     }
 
     /* Стили для подсветки самого элемента в режиме "Начать обучение" */
@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
       nextLabel: 'Далее →', 
       prevLabel: '← Назад', 
       doneLabel: 'Завершить'
+      // Мы убрали 'overlayOpacity' отсюда, чтобы CSS-правило работало
     })
     .onbeforechange(function(element) {
         document.querySelectorAll('.highlighted-tour-element').forEach(el => {
@@ -170,7 +171,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // --- ПЕРВЫЙ ЗАПУСК: СОЗДАЕМ ПОДСКАЗКИ ---
       introInstanceForHints = introJs().setOptions({ 
         hints: hintsDataForIntroJs, 
-        hintButtonLabel: 'Изучено'
+        hintButtonLabel: 'Изучено',
+        overlayOpacity: 0 // В режиме подсказок оверлей не нужен
       });
 
       introInstanceForHints.onhintclose((stepId) => {
